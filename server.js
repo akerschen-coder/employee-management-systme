@@ -2,12 +2,16 @@ const inquirer = require('inquirer');
 const logo = require('asciiart-logo');
 
 
-//art();
+art();
 function art() {
-    // logo will be somehwere here?    
+    const logoText = logo({ name: "This is cool" }).render();
+
+    console.log(logoText);
+
+    mainMenu();
 }
 
-
+// prompts users choice
 function mainMenu() {
     inquirer
         .prompt([
@@ -22,7 +26,7 @@ function mainMenu() {
                     'Add a department',
                     'Add a role',
                     'Add an employee',
-                    'Update an employee', 
+                    'Update an employee',
                     'Quit'
                 ],
             },
@@ -49,41 +53,54 @@ function mainMenu() {
                 case 'Update an employee':
                     updateEmployee();
                     break;
-                //still have to create the default
+                case 'Quit':
+                    quit();
+                    break;
                 default:
                     quit();
             }
         });
-} 
+}
 // all departments
 function viewAllDepartment() {
 
+    mainMenu();
 }
 // all roles 
 function viewAllRoles() {
 
-} 
+    mainMenu();
+}
 // all employees 
 function viewAllEmployees() {
 
+    mainMenu();
 }
 // add department 
 function addDepartment() {
 
+    mainMenu();
 }
 //add role
-function addRole () {
+function addRole() {
 
+    mainMenu();
 }
 // add employee
-function addEmployee () {
+function addEmployee() {
 
+    mainMenu();
 }
 //update employee
-function updateEmployee () {
+function updateEmployee() {
 
+    mainMenu();
 }
-mainMenu();
+// quit function 
+function quit() {
+    console.log('Bye!');
+}
+
 
 
 
