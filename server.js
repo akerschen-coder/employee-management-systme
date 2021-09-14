@@ -1,17 +1,7 @@
 const inquirer = require('inquirer');
-const mysql = require('mysql2');
 const logo = require('asciiart-logo');
+const db = require('./db/happening');
 
-//database connection 
-const db = mysql.createConnection(
-    {
-        host: 'localhost',
-        user: 'root',
-        password: 'LetsKickIt1!',
-        database: 'employeesystem_db'
-    },
-    console.log(`Connected to the books_db database.`)
-);
 // for the art thingy
 art();
 function art() {
@@ -74,17 +64,20 @@ function mainMenu() {
 }
 // all departments
 function viewAllDepartment() {
-
+    const departments = db.viewAllDepartment();
+    console.log(departments);
     mainMenu();
 }
 // all roles 
 function viewAllRoles() {
-
+    const allRoles = db.viewAllRoles();
+    console.log(allRoles);
     mainMenu();
 }
 // all employees 
 function viewAllEmployees() {
-
+    const allEmployees = db.viewAllRoles();
+    console.log(allEmployees);
     mainMenu();
 }
 // add department 
