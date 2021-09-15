@@ -10,34 +10,42 @@ const connect = mysql.createConnection(
     console.log(`Connected to the employeesystem_db database.`)
 ); 
 
+connect.connect(function (err){
+    if (err)throw err;
+});
+
 class DB {
     constructor(connect) {
         this.connect = connect;
     }
     // view all departments 
-    viewAllDepartment(res) {
-         return this.connect.query('SELECT * FROM department', function (err, results) {
-            res.json(results);
-        });
+    findAllDepartment() {
+         return this.connect.promise().query('SELECT * FROM department');
     } 
     //view all roles 
-    viewAllRoles() {
-        this.connect.query('SELECT * FROM roles', function (err, results) {
-            res.json(results);
-        });
+    findAllRoles() {
+        return this.connect.promise().query('SELECT roles.id, roles.title, roles.salary, department.department_name AS department FROM roles LEFT JOIN department ON roles.department_id = department.id');
     }
     //view all employees
-    viewAllEmployees() {
-        this.connect.query('SELECT * FROM employee', function (err, results) {
-            res.json(results);
-        });
+    findAllEmployees() {
+       return this.connect.promise().query('SELECT employee.id, employee.first_name, employee.last_name, roles.title AS Role, department.department_name AS Department, roles.salary AS Salary, CONCAT(manager.first_name, " ", manager.last_name) AS Manager FROM employee LEFT JOIN roles ON employee.role_id = roles.id LEFT JOIN department ON roles.department_id = department.id LEFT JOIN employee manager ON manager.id = employee.manager_id;');
     }
     //add a department 
+    createDepartment(department) {
+        return this.connect.promise().query(
+            "INSERT INTO department SET ?", department
+          );
 
+    }
     //add a role
+        // prompt to ask what role 
 
     //add an employee
+        // ask first and last name 
+        // ask role and manager
 
     //update an employee
+        // go through list of people to select
+        // ask what role want to assign 
 } 
 module.exports = new DB(connect);

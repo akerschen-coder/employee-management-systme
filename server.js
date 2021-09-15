@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
 const logo = require('asciiart-logo');
 const db = require('./db/happening');
+require('console.table');
 
 // for the art thingy
 art();
@@ -64,26 +65,40 @@ function mainMenu() {
 }
 // all departments
 function viewAllDepartment() {
-    const departments = db.viewAllDepartment();
-    console.log(departments);
-    mainMenu();
+   db.findAllDepartment().then(([row])=> {
+     console.table(row);  
+   }).then(() => {
+       mainMenu(); 
+   });
 }
 // all roles 
 function viewAllRoles() {
-    const allRoles = db.viewAllRoles();
-    console.log(allRoles);
-    mainMenu();
+     db.findAllRoles().then(([row])=>{
+         console.table(row);
+        }).then(()=>{
+            mainMenu();
+        });
 }
 // all employees 
 function viewAllEmployees() {
-    const allEmployees = db.viewAllRoles();
-    console.log(allEmployees);
-    mainMenu();
+    db.findAllEmployees().then(([row])=>{
+
+        console.table(row);
+    }).then(()=>mainMenu());
+    
 }
 // add department 
 function addDepartment() {
 // needs prompt to make new department and link it to area
+inquirer.prompt([{
+    name: 'department_name',
+    message: 'What is departments name?'
+}]).then((data)=>{
+    //console.log(data);
+    db.createDepartment(data).then(()=>{
     mainMenu();
+    });
+});
 }
 //add role
 function addRole() {
