@@ -38,14 +38,26 @@ class DB {
 
     }
     //add a role
-        // prompt to ask what role 
+    createRole() {
+        return this.connect.promise().query(
+            "INSERT INTO roles (title, salary, department_id) values (?,?,?)", role.title, role.salary, role.department_id
+        );
+    }
+    
 
     //add an employee
-        // ask first and last name 
-        // ask role and manager
+    createEmployee() {
+        return this.connect.promise().query(
+            "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?,?)", employee.first_name, employee.last_name, employee.role_id, employee.manager_id
+        );
+    }
 
-    //update an employee
-        // go through list of people to select
-        // ask what role want to assign 
+    //update employee
+    updateE() {
+        return this.connect.promise().query(
+            "INSERT INTO employee SET role_id = ? WHERE id = ?", role_id, employee.id
+        );
+    }
+
 } 
 module.exports = new DB(connect);
