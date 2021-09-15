@@ -120,7 +120,7 @@ function addRole() {
         db.createRole(data).then(() => {
             mainMenu();
         });
-    });
+    }); 
 
 }
 // add employee
