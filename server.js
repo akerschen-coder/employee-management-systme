@@ -54,7 +54,7 @@ function mainMenu() {
                     addEmployee();
                     break;
                 case 'Update an employee':
-                    updateEmployee();
+                    updateEmployeeRole();
                     break;
                 case 'Quit':
                     quit();
@@ -125,12 +125,8 @@ function addRole() {
 }
 // add employee
 function addEmployee() {
-    const roles = db.findAllRoles();
-    const roleChoices = roles.map(function (role) {
-        return { name: role.title };
-    })
     inquirer.prompt([
-        // first name 
+        //first name 
         {
             name: 'first_name',
             message: 'What is employees first name?'
@@ -139,57 +135,99 @@ function addEmployee() {
         {
             name: 'last_name',
             message: 'What is employees last name?'
-        },
-        //role 
-        {
-            type: 'list',
-            name: 'role_id',
-            message: 'What is the role for employees?',
-            choices: roleChoices
         }
+
     ]).then((data) => {
-        db.createEmployee(data).then(() => {
-            mainMenu();
+        const fName = data.first_name;
+        const lName = data.last_name;
+
+        db.findAllRoles().then(([row]) => {
+            const roles = row;
+            const roleChoices = roles.map(({ id, title }) => ({
+                name: title,
+                value: id
+            }));
+            inquirer.prompt([
+                //role 
+                {
+                    type: 'list',
+                    name: 'role_id',
+                    message: 'What is the role for employees?',
+                    choices: roleChoices
+                }
+            ]).then((res) => {
+                const roleId = res.role_id;
+                db.findAllEmployees().then(([row]) => {
+                    const employees = row;
+                    const managerChoice = employees.map(({ id, first_name, last_name }) => ({
+                        name: `${first_name} ${last_name}`,
+                        value: id
+                    }));
+                    inquirer.prompt([
+                        {
+                            type: 'list',
+                            name: 'manager_id',
+                            message: 'What manager do they work under?',
+                            choices: managerChoice
+                        }
+                    ]).then((res) => {
+                        const newEmployee = {
+                            manager_id: res.manager_id,
+                            role_id: roleId,
+                            first_name: fName,
+                            last_name: lName
+                        };
+                        db.createEmployee(newEmployee);
+                    }).then(() => mainMenu());
+
+                });
+            });
         });
     });
 }
 
 //update employee
-function updateEmployee() {
+function updateEmployeeRole() {
     // choosing which employee
-    const employee = db.findAllEmployees();
-    const employeeChoices = employee.map((employee) => {
-        return `${employee.first_name} ${employee.last_name}`;
+    db.findAllEmployees().then(([row]) => {
+        const employees = row;
+        const employeeChoice = employees.map(({ id, first_name, last_name }) => ({
+            name: `${first_name} ${last_name}`,
+            value: id
+        }));
 
-    });
-    //choosing the role
-    const roles = db.findAllRoles();
-    const roleChoices = roles.map(function (role) {
-        return { name: role.title };
-    });
-    inquirer.prompt([
-        //choosing the employee
-        {
-            type: 'list',
-            name: 'employee.id',
-            message: 'Which employee would you like to update?',
-            choices: employeeChoices
-        },
-        //choosing the role
-        {
-            type: 'list',
-            name: 'role_id',
-            message: 'Which role to you want to move them to?',
-            choices: roleChoices
-        }
-    ]).then((data)=> {
-        db.updateE(data).then(() => {
-            mainMenu();
-        });
-    });
+        inquirer.prompt([
+            //choosing the employee
+            {
+                type: 'list',
+                name: 'employeeId',
+                message: 'Which employee would you like to update?',
+                choices: employeeChoice
+            }
+        ]).then((data) => {
+            const employeeId = data.employeeId;
+            db.findAllRoles().then(([row]) => {
+                const roles = row;
+                const roleChoices = roles.map(({ id, title }) => ({
+                    name: title,
+                    value: id
+                }));
+                inquirer.prompt([
+                    //role 
+                    {
+                        type: 'list',
+                        name: 'role_id',
+                        message: 'What is the employee new role?',
+                        choices: roleChoices
+                    }
+                ]).then((res) => {
+                    db.updateE(employeeId, res.role_id);
+                }).then(() => mainMenu());
+            });
+        })
+    }
+    );
 }
-
-
 // quit function 
 function quit() {
     console.log('Bye!');
