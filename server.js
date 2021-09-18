@@ -111,18 +111,35 @@ function addRole() {
         {
             name: 'salary',
             message: 'How much will this role make?'
-        },
-        {
-            name: 'deparment_id',
-            message: 'Which department does it belong to?'
-        },
-    ]).then((data) => {
-        db.createRole(data).then(() => {
-            mainMenu();
+        }
+        ]).then((data)=> {
+            const rTitle = data.title;
+            const rSalary = data.salary;
+            db.findAllDepartment().then(([row]) => {
+                const department = row;
+                const departmentChoices = department.map(({ department_name, id }) => ({
+                    name: `${department_name}`,
+                    value: id
+                }));
+                inquirer.prompt([
+                    {
+                        type: 'list',
+                        name: 'department_name',
+                        message: 'Which department would it belong to?',
+                        choices: departmentChoices
+                    }
+                ]).then((res) => {
+                    const newRole = {
+                        department_id:  res.department_name,
+                        title: rTitle,
+                        salary: rSalary
+                    };
+                    db.createRole(newRole);
+                }).then(() => mainMenu());
+            });
         });
-    }); 
+    }
 
-}
 // add employee
 function addEmployee() {
     inquirer.prompt([
@@ -231,6 +248,7 @@ function updateEmployeeRole() {
 // quit function 
 function quit() {
     console.log('Bye!');
+    process.exit();
 }
 
 
